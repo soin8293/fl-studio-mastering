@@ -1,0 +1,14 @@
+# Allow only the reusable distribution. Local music and working records stay out.
+*
+!.gitignore
+!README.md
+!SKILL.md
+!agents/
+!agents/openai.yaml
+!references/
+!references/commands.md
+!references/windows-fl21.md
+!scripts/
+!scripts/audio.py
+!scripts/fl_project.py
+!scripts/render_project.ps1
