@@ -43,9 +43,11 @@ Check the reported track index against the live track name and plugin lineup bef
 ## Render
 
 ```powershell
-& scripts/render_project.ps1 -Project .\music\song-alternative.flp -OutputDirectory .\renders\alternative -RestoreProject .\music\song-approved.flp
+& scripts/render_project.ps1 -Project .\music\song-alternative.flp -OutputDirectory .\renders\alternative -ProjectTitle 'Song title' -ExpectedDurationSeconds 120 -DurationToleranceSeconds 2 -RestoreProject .\music\song-approved.flp
 ```
 
 Use `-FlExe` to supply a different installation path. Existing FL sessions must be closed first; the helper does not terminate them. It runs FL's native `/R /Ewav /O` command and accepts completion after a stable, decodable WAV and a finished render state. It stops only its own completed process and can reopen a supplied project.
 
 Output inherits FL's current render-quality and bit-depth settings; inspect it before final conversion. If a timeout or dialog blocks the export, the helper leaves its process intact and reports its PID. Diagnose that process before starting another render.
+
+Set and save Song mode first. Supply `-ExpectedDurationSeconds` from the arrangement or full-length stem; `-DurationToleranceSeconds` allows a known render tail/rounding difference (default 2 seconds). A mismatch is rejected and its task process is left available for diagnosis. Omission of expected duration retains the legacy positive-duration check, which can accept an empty pattern export. `-ProjectTitle` permits the exact finished caption based on title metadata; filename and filename stem captions are also recognized. The example duration/title are placeholders to replace for each project.

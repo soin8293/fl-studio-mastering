@@ -50,4 +50,29 @@ An existing FL instance can cause another command-line render request to exit wi
 
 Before any separately authorized restart, identify the saved project, confirm that playback/recording is stopped, and establish that there are no unsaved changes. Do not force-close an uncertain session. The helper refuses to close a pre-existing process. Reopen the intended project afterward and verify a fresh bridge connection if live control is needed.
 
-Live plugin edits are separate from saved project data. Saving arbitrary live plugin states through an FL API is not provided by these helpers; use a supported persistence route or save the project before rendering its copy.
+## Save an identified working project
+
+On FL21/API30, an already-named working project was saved successfully through the MIDI-controller command below, with saved bytes and reopened parameters checked. First confirm the active project is the intended separate working copy. Save writes that current project; the command does not take a destination path.
+
+```python
+# Inside an enabled Flapi client; after identifying the working project.
+import general, transport, midi
+assert not transport.isRecording()
+if transport.isPlaying():
+    transport.stop()
+if transport.getLoopMode() != 1:  # 0 = Pattern, 1 = Song
+    transport.setLoopMode()
+transport.globalTransport(midi.FPT_Save, 1)
+```
+
+Wait briefly, verify `general.getChangedFlag()==0`, compare the intended file's bytes/hash, then reopen and read representative parameters, bypass/mix values, faders and routes. An uncompleted Save with a blocked load/dialog does not establish that the command is unsupported. If persistence remains uncertain, preserve the session and request the user's save/close rather than discarding changes. No generic arbitrary-plugin offline writer is supplied here.
+
+Saving Song mode matters: `/R` can render an empty pattern into a valid short WAV. On the observed FL21 stream, Song mode persisted as `ProjectID.LoopActive=true`; that property name/library description is not reliable evidence of a selected Playlist loop. Verify the live mode and save it before exporting. Pass the expected full arrangement duration to the renderer.
+
+## Offline template and preset compatibility
+
+The external sample loader's bundled template and 80-byte Playlist writer can target newer FL releases. For FL21, use a compatible installed factory template and the observed 60-byte Playlist records, then verify the live arrangement. Referenced audio must remain available with the project.
+
+Offline grafting of preset plugin events is different from loading an FST normally in FL. Native wrapper state can retain a source insert/slot destination; in the observed FL21 `WrapperEvent._u1` prefix, the first eight bytes are two little-endian uint32 values for insert and slot. Assign the intended destination before grafting and confirm live locations. Older ASCII plugin-name events also need conversion to the destination stream's UTF-16 strings. Do not generalize these observed fields to other versions without verification. The supplied helper exports presets; it does not import or graft them.
+
+Formatted readback is essential when adapting controls: EQ2 and Maximus frequency knobs do not use the same normalized frequency scale. Record actual displayed Hz, dB and times instead of assuming the requested raw value produced a particular setting.

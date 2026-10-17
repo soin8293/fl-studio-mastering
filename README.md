@@ -11,6 +11,7 @@ The workflow starts with the recording and the existing project. It checks routi
 - [Project helper](scripts/fl_project.py): FL21 mixer inspection, native mixer-preset export and mixer-parameter changes in a new project copy.
 - [Render helper](scripts/render_project.ps1): native FL command-line export while protecting existing sessions.
 - [Commands](references/commands.md) and [Windows setup](references/windows-fl21.md).
+- [Vocal smoothing](references/vocal-smoothing.md): adapt preset components to processed stems while preserving clarity and vocal/beat balance.
 
 ## Requirements
 
@@ -53,6 +54,8 @@ Plugin presence is different from audible processing: a bypassed slot or a zero 
 Preset export preserves saved plugin state and mixer settings, while omitting song routing. Structural checks do not establish that a preset has been loaded successfully into FL. Offline mixer edits cover mix, bypass and fader values, not arbitrary native/VST parameter blocks. Live parameter changes need a separate persistence step before they exist in the saved FLP.
 
 The renderer refuses to close pre-existing FL processes. A stalled render leaves its own process available for diagnosis. Final audio conversion and comparison files are separate from the saved project state.
+
+Save Song mode before full-song export, and supply the known arrangement duration to `-ExpectedDurationSeconds`. A decodable short pattern is not a full-song export. Use `-ProjectTitle` when FL's finished caption uses metadata instead of the filename. See the Windows reference for the verified MIDI-controller Save route and offline preset destination/encoding concerns.
 
 ## Upstream tools
 
